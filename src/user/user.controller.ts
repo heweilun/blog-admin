@@ -1,14 +1,17 @@
 import { Controller, Get, Post, Req, Res, HttpCode, Header, Redirect, HttpStatus, Body, ValidationPipe, UsePipes } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { LoginBodyDto } from '../dto/login';
 
 @Controller('user')
+@ApiTags('用户系统')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Post('login')
-    @UsePipes(new ValidationPipe({ transform: true }))
+    @ApiOperation({ summary: '登录' })//接口描述
+    // @UsePipes(new ValidationPipe({ transform: true }))
     async loginPost(@Body() body: LoginBodyDto,@Res() response: Response) {
         // response.header(204, {'demo-test': 'none'})
         // response.redirect('https://www.baidu.com')
