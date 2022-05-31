@@ -2,7 +2,7 @@ import { Controller, Get, Post, Req, Res, HttpCode, Header, Redirect, HttpStatus
 import { Request, Response } from 'express';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { LoginBodyDto } from '../dto/login';
+import { LoginBodyDto } from '../dto/user';
 
 @Controller('user')
 @ApiTags('用户系统')
@@ -11,8 +11,8 @@ export class UserController {
 
     @Post('login')
     @ApiOperation({ summary: '登录' })//接口描述
-    // @UsePipes(new ValidationPipe({ transform: true }))
-    async loginPost(@Body() body: LoginBodyDto,@Res() response: Response) {
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async login(@Body() body: LoginBodyDto,@Res() response: Response) {
         // response.header(204, {'demo-test': 'none'})
         // response.redirect('https://www.baidu.com')
         // response.status(HttpStatus.OK)
