@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Query, ValidationPipe, UsePipes, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Query, ValidationPipe, UsePipes, Body, Param, Res, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { BlogService } from './blog.service';
+import { Request, Response } from 'express';
 import { ListQueryDto, AddBodyDto, DeleteParamDto, UpdateBodyDto } from '../dto/blog';
 
 @Controller('blog')
@@ -11,21 +12,21 @@ export class BlogController {
     @Get('list')
     @ApiOperation({ summary: '博客查询' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    blogList(@Query() query: ListQueryDto) {
-        return this.blogService.blogList();
+    async blogList(@Query() query: ListQueryDto, @Res() response: Response) {
+        this.blogService.blogList().then(res => response.status(HttpStatus.OK).json(res))
     }
 
     @Post('add')
     @ApiOperation({ summary: '新建博客' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    blogAdd(@Body() body: AddBodyDto) {
+    async blogAdd(@Body() body: AddBodyDto) {
         return this.blogService.blogAdd();
     }
 
     @Post('delete/:id')
     @ApiOperation({ summary: '删除博客' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    blogDelete(@Param() param: DeleteParamDto) {
+    async blogDelete(@Param() param: DeleteParamDto) {
         return this.blogService.blogDelete();
     }
 

@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import {SuccessModel, ErrorModel} from '../model/resModel';
 
 @Injectable()
 export class BlogService {
-    blogList(): any[] {
-        return [{
-            id: 1,
-            name: 'test'
-        }];
+    async blogList(): Promise<any> {
+        return new SuccessModel([
+            {
+                id: 1,
+            },
+            {
+                id: 2
+            }
+        ], '登录成功', 0)
     }
 
     blogAdd(): boolean {
