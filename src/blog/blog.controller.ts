@@ -2,7 +2,7 @@ import { Controller, Get, Post, Query, ValidationPipe, UsePipes, Body, Param, Re
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { BlogService } from './blog.service';
 import { Request, Response } from 'express';
-import { ListQueryDto, AddBodyDto, DeleteParamDto, UpdateBodyDto } from '../dto/blog';
+import { SearchQueryDto, AddBodyDto, DeleteBodyDto, UpdateBodyDto } from '../dto/blog';
 
 @Controller('blog')
 @ApiTags('博客系统')
@@ -11,29 +11,33 @@ export class BlogController {
 
     @Get('list')
     @ApiOperation({ summary: '博客查询' })//接口描述
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async blogList(@Query() query: ListQueryDto, @Res() response: Response) {
-        this.blogService.blogList().then(res => response.status(HttpStatus.OK).json(res))
+    @UsePipes(new ValidationPipe())
+    async blogSearch(@Query() searchBlogDto: SearchQueryDto, @Res() response: Response) {
+        const res = await this.blogService.blogSearch(searchBlogDto)
+        response.status(HttpStatus.OK).json(res)
     }
 
     @Post('add')
     @ApiOperation({ summary: '新建博客' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    async blogAdd(@Body() body: AddBodyDto) {
-        return this.blogService.blogAdd();
+    async blogAdd(@Body() addBlogDto: AddBodyDto, @Res() response: Response) {
+        const res = await this.blogService.blogAdd(addBlogDto)
+        response.status(HttpStatus.OK).json(res)
     }
 
-    @Post('delete/:id')
+    @Post('delete')
     @ApiOperation({ summary: '删除博客' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    async blogDelete(@Param() param: DeleteParamDto) {
-        return this.blogService.blogDelete();
+    async blogDelete(@Body() deleteBlogDto: DeleteBodyDto, @Res() response: Response) {
+        const res = await this.blogService.blogDelete(deleteBlogDto)
+        response.status(HttpStatus.OK).json(res)
     }
 
     @Post('update')
     @ApiOperation({ summary: '更新博客' })//接口描述
     @UsePipes(new ValidationPipe({ transform: true }))
-    blogUpdate(@Body() body: UpdateBodyDto) {
-        return this.blogService.blogUpdate();
+    async blogUpdate(@Body() updateBlogDto: UpdateBodyDto, @Res() response: Response) {
+        const res = await this.blogService.blogUpdate(updateBlogDto)
+        response.status(HttpStatus.OK).json(res)
     }
 }

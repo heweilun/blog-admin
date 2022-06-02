@@ -6,11 +6,13 @@ import { BlogService } from './blog/blog.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from './config'
 import { UserModule } from './user/user.module';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(env.DATABASE_CONFIG),
     UserModule,
+    BlogModule,
   ],
   controllers: [UserController, BlogController],
   providers: [UserService, BlogService],

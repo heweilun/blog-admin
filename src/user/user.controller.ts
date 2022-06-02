@@ -20,6 +20,7 @@ export class UserController {
         // response.status(204)
         response.header('Cache-Control','none')
         const res = await this.userService.loginCheck(loginDto)
+        console.log(res)
         response.status(HttpStatus.OK).json(res)
     }
 }

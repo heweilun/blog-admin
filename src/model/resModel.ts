@@ -5,9 +5,7 @@ export class BaseModel {
     public success: true
     public constructor(data: any, message: string) {
         this.success = true
-        if(data) {
-            this.data = data
-        }
+        this.data = data?data:null
         if(message) {
             this.message = message
         }
@@ -16,7 +14,7 @@ export class BaseModel {
 
 export class SuccessModel extends BaseModel {
     public errno: number
-    constructor(data, message, errno: number){
+    constructor(data, message, errno?: number){
         super(data, message)
         this.errno = errno || 0
     }
@@ -24,7 +22,7 @@ export class SuccessModel extends BaseModel {
 
 export class ErrorModel extends BaseModel {
     public errno: number
-    constructor(data, message, errno: number) {
+    constructor(data, message, errno?: number) {
         super(data, message)
         this.errno = errno || -1
     }
