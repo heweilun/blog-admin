@@ -2,7 +2,7 @@ import { Controller, Get, Post, Req, Res, HttpCode, Header, Redirect, HttpStatus
 import { Request, Response } from 'express';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { LoginBodyDto } from '../dto/user';
+import { LoginBodyDto, VerifyBodyDto } from '../dto/user';
 
 
 @Controller('user')
@@ -21,6 +21,15 @@ export class UserController {
         response.header('Cache-Control','none')
         const res = await this.userService.loginCheck(loginDto)
         console.log(res)
+        response.status(HttpStatus.OK).json(res)
+    }
+
+    @Post('sendVerifyCode')
+    @ApiOperation({ summary: '获取短信验证码' })//接口描述
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async sendVerifyCode(@Body() verifyDto: VerifyBodyDto,@Res() response: Response) {
+        response.header('Cache-Control','none')
+        const res = await this.userService.sendVerifyCode(verifyDto)
         response.status(HttpStatus.OK).json(res)
     }
 }
