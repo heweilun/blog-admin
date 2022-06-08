@@ -8,7 +8,8 @@ export class LoginBodyDto {
         example: '123456'
     })
     @IsNotEmpty({ message: '验证码 不允许为空' })
-    verifyCode: string;
+    @IsNumberString()
+    verifyCode: number;
 
     @ApiProperty({ 
         required: true,
@@ -28,4 +29,12 @@ export class VerifyBodyDto {
     @IsNotEmpty({ message: '手机号码 不允许为空' })
     @IsNumberString()
     phone: number;
+
+    @ApiProperty({ 
+        required: false,
+        description:'过期时间',
+        example: '60（以秒为单位）'
+    })
+    @IsNumber()
+    expireTime: number;
 }

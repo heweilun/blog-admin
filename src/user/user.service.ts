@@ -12,13 +12,28 @@ export class UserService {
     // @InjectRepository(UserEntity)
     // private readonly userRespository: Repository<UserEntity>
     async loginCheck(loginDto): Promise<any> {
-        const { phone } = loginDto
-        const loginState = await getRepository(UserEntity).findOne({where: {phone} })
-        return loginState? new SuccessModel(loginState, '用户登录成功'): new ErrorModel(loginState, '用户不存在');
+        const { phone, verifyCode } = loginDto
+        const redisHasKey = await REDIS_DB.get(phone)//判断redis没有
+        if(redisHasKey) {
+            if(redisHasKey === verifyCode) {//验证码比对通过
+                const isOldUser = await getRepository(UserEntity).findOne({where: {phone} })
+                console.log(isOldUser)
+                if(isOldUser) {//老用户
+
+                }else {//注册：添加新用户
+                    console.log(loginDto)
+                    const addState = await getRepository(UserEntity).save({...loginDto,createtime: Date.now()})
+                }
+            } else {
+                return new ErrorModel(null, '验证码有误，请重新填写或发送')
+            }
+        }else {
+            return new ErrorModel(null, '请先发送验证码或验证码已过期')
+        }
     }
 
     async sendVerifyCode(verifyDto): Promise<any> {
-        const { phone } = verifyDto
+        const { phone, expireTime } = verifyDto
         const code:number = Math.floor(Math.random()*(9999-1000)) + 1000//4位数验证码
         const params = {
             /* 短信应用ID: 短信SmsSdkAppId在 [短信控制台] 添加应用后生成的实际SmsSdkAppId，示例如1400006666 */
@@ -48,10 +63,10 @@ export class UserService {
                 console.log(err)
             }
         })
-        console.log(smsState, 1)
         if(smsState.SendStatusSet[0].Fee){
             // 发送成功将验证码存入redis
-            const redisState = await REDIS_DB.set('verifyCode',code)//留存，key以用户信息为准？
+            const redisState = await REDIS_DB.set(phone,code)//手机号：验证码存入redis
+            REDIS_DB.expire(phone, expireTime?expireTime:2*60)//默认过期时间120秒
             return redisState? new SuccessModel(redisState, '短信验证码发送成功'): new ErrorModel(redisState, '短信验证码发送失败');
         } else {
             return new ErrorModel(smsState.SendStatusSet[0].Message, '短信验证码发送失败')
